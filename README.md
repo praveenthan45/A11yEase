@@ -22,6 +22,31 @@ npm run preview
 
 The production output is `dist/`. Configure the host to serve `index.html` for routes that do not correspond to physical assets. Vite handles route fallback during development and preview. Netlify fallback configuration is included; configure the equivalent SPA rewrite on other hosts. BrowserRouter requires this for directly opening `/features`, `/contact` and the other routes.
 
+## Deploy on Render
+
+For the existing Render **Web Service**, select the **Node** runtime and use these settings:
+
+| Setting | Value |
+| --- | --- |
+| Branch | `main` |
+| Root Directory | Leave empty |
+| Build Command | `npm ci --include=dev && npm run build` |
+| Start Command | `npm start` |
+
+The build command explicitly installs Vite and the other build dependencies, including when `NODE_ENV=production` is set. The start command runs the installed `serve` production dependency against the existing `dist/` output. It reads Render's `PORT` environment variable, accepts connections on all interfaces, and serves `index.html` for client-side routes such as `/features` and `/contact`. No package download or Vite rebuild is needed at startup. Locally, its default port is 3000.
+
+Keep the build command in **Build Command** only. If the deployment log says it is running `npm ci && npm run build` during startup, edit **Start Command** to `npm start`, save the settings, and redeploy the latest commit.
+
+To test this production workflow locally:
+
+```sh
+npm ci --include=dev
+npm run build
+npm start
+```
+
+A Render **Static Site** can also serve this frontend. Use the same build command, set **Publish Directory** to `dist`, and add the rewrite `/*` → `/index.html`. Static Sites do not need a start command. The optional public environment variables below apply to either deployment type.
+
 ## Configuration
 
 Copy `.env.example` to `.env.local` and set public build-time values:

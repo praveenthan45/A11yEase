@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
+    "start": "serve -s dist --no-clipboard --no-port-switching",
     "preview": "vite preview --host 127.0.0.1",
     "verify": "node scripts/verify.mjs",
     "verify:categories": "node scripts/verify-categories.mjs",
@@ -15,7 +16,8 @@
     "lucide-react": "^0.548.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "react-router-dom": "^7.9.4"
+    "react-router-dom": "^7.9.4",
+    "serve": "14.2.6"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
