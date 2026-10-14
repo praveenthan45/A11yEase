@@ -1,0 +1,262 @@
+[
+  {
+    "number": 1,
+    "category": "Visual Accessibility",
+    "title": "Increase Text Size"
+  },
+  {
+    "number": 2,
+    "category": "Visual Accessibility",
+    "title": "Decrease Text Size"
+  },
+  {
+    "number": 3,
+    "category": "Visual Accessibility",
+    "title": "High Contrast Mode"
+  },
+  {
+    "number": 4,
+    "category": "Visual Accessibility",
+    "title": "Dark Mode"
+  },
+  {
+    "number": 5,
+    "category": "Visual Accessibility",
+    "title": "Light Mode"
+  },
+  {
+    "number": 6,
+    "category": "Visual Accessibility",
+    "title": "Grayscale Mode"
+  },
+  {
+    "number": 7,
+    "category": "Visual Accessibility",
+    "title": "Color Blindness Support"
+  },
+  {
+    "number": 8,
+    "category": "Visual Accessibility",
+    "title": "Text Spacing Adjustment"
+  },
+  {
+    "number": 9,
+    "category": "Visual Accessibility",
+    "title": "Magnifier / Zoom"
+  },
+  {
+    "number": 10,
+    "category": "Visual Accessibility",
+    "title": "Highlight Links"
+  },
+  {
+    "number": 11,
+    "category": "Reading and Text Accessibility",
+    "title": "Dyslexia-Friendly Font"
+  },
+  {
+    "number": 12,
+    "category": "Reading and Text Accessibility",
+    "title": "Reading Guide"
+  },
+  {
+    "number": 13,
+    "category": "Reading and Text Accessibility",
+    "title": "Reading Mask"
+  },
+  {
+    "number": 14,
+    "category": "Reading and Text Accessibility",
+    "title": "Text-to-Speech"
+  },
+  {
+    "number": 15,
+    "category": "Reading and Text Accessibility",
+    "title": "Adjustable Reading Speed"
+  },
+  {
+    "number": 16,
+    "category": "Reading and Text Accessibility",
+    "title": "Text Alignment"
+  },
+  {
+    "number": 17,
+    "category": "Reading and Text Accessibility",
+    "title": "Simplified Text Mode"
+  },
+  {
+    "number": 18,
+    "category": "Reading and Text Accessibility",
+    "title": "Paragraph Highlighting"
+  },
+  {
+    "number": 19,
+    "category": "Keyboard and Motor Accessibility",
+    "title": "Keyboard Navigation"
+  },
+  {
+    "number": 20,
+    "category": "Keyboard and Motor Accessibility",
+    "title": "Visible Keyboard Focus"
+  },
+  {
+    "number": 21,
+    "category": "Keyboard and Motor Accessibility",
+    "title": "Skip to Main Content"
+  },
+  {
+    "number": 22,
+    "category": "Keyboard and Motor Accessibility",
+    "title": "Large Click Targets"
+  },
+  {
+    "number": 23,
+    "category": "Keyboard and Motor Accessibility",
+    "title": "Voice Commands"
+  },
+  {
+    "number": 24,
+    "category": "Keyboard and Motor Accessibility",
+    "title": "Switch Device Support"
+  },
+  {
+    "number": 25,
+    "category": "Keyboard and Motor Accessibility",
+    "title": "Sticky Keys Compatibility"
+  },
+  {
+    "number": 26,
+    "category": "Hearing Accessibility",
+    "title": "Closed Captions"
+  },
+  {
+    "number": 27,
+    "category": "Hearing Accessibility",
+    "title": "Live Captions"
+  },
+  {
+    "number": 28,
+    "category": "Hearing Accessibility",
+    "title": "Audio Transcripts"
+  },
+  {
+    "number": 29,
+    "category": "Hearing Accessibility",
+    "title": "Visual Notifications"
+  },
+  {
+    "number": 31,
+    "category": "Cognitive and Learning Accessibility",
+    "title": "Distraction-Free Mode"
+  },
+  {
+    "number": 32,
+    "category": "Cognitive and Learning Accessibility",
+    "title": "Simplified Navigation"
+  },
+  {
+    "number": 33,
+    "category": "Cognitive and Learning Accessibility",
+    "title": "Content Summarization"
+  },
+  {
+    "number": 34,
+    "category": "Cognitive and Learning Accessibility",
+    "title": "Reading Progress Indicator"
+  },
+  {
+    "number": 35,
+    "category": "Cognitive and Learning Accessibility",
+    "title": "Pause Animations"
+  },
+  {
+    "number": 36,
+    "category": "Cognitive and Learning Accessibility",
+    "title": "Extended Time Limits"
+  },
+  {
+    "number": 37,
+    "category": "Cognitive and Learning Accessibility",
+    "title": "Step-by-Step Instructions"
+  },
+  {
+    "number": 38,
+    "category": "Motion and Sensory Accessibility",
+    "title": "Reduce Motion"
+  },
+  {
+    "number": 39,
+    "category": "Motion and Sensory Accessibility",
+    "title": "Stop Auto-Playing Media"
+  },
+  {
+    "number": 40,
+    "category": "Motion and Sensory Accessibility",
+    "title": "Flashing Content Protection"
+  },
+  {
+    "number": 41,
+    "category": "Motion and Sensory Accessibility",
+    "title": "Brightness / Color Intensity Adjustment"
+  },
+  {
+    "number": 42,
+    "category": "Screen Reader Accessibility",
+    "title": "Screen Reader Compatibility"
+  },
+  {
+    "number": 43,
+    "category": "Screen Reader Accessibility",
+    "title": "Image Alternative Text"
+  },
+  {
+    "number": 44,
+    "category": "Screen Reader Accessibility",
+    "title": "Accessible Form Labels"
+  },
+  {
+    "number": 45,
+    "category": "Screen Reader Accessibility",
+    "title": "Accessible Headings and Landmarks"
+  },
+  {
+    "number": 46,
+    "category": "Screen Reader Accessibility",
+    "title": "Screen Reader Status Announcements"
+  },
+  {
+    "number": 47,
+    "category": "Forms and Interaction Accessibility",
+    "title": "Accessible Error Messages"
+  },
+  {
+    "number": 48,
+    "category": "Forms and Interaction Accessibility",
+    "title": "Show / Hide Password"
+  },
+  {
+    "number": 49,
+    "category": "Forms and Interaction Accessibility",
+    "title": "Accessible Authentication"
+  },
+  {
+    "number": 50,
+    "category": "Forms and Interaction Accessibility",
+    "title": "Confirmation Before Important Actions"
+  },
+  {
+    "number": 51,
+    "category": "Personalization and Accessibility Controls",
+    "title": "Save Accessibility Preferences"
+  },
+  {
+    "number": 52,
+    "category": "Personalization and Accessibility Controls",
+    "title": "Reset Accessibility Settings"
+  },
+  {
+    "number": 53,
+    "category": "Personalization and Accessibility Controls",
+    "title": "Accessibility Profiles"
+  }
+]

@@ -1,0 +1,12 @@
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import App from './App';
+import './styles/global.css';
+import './styles/components.css';
+import './styles/responsive.css';
+import './styles/catalog.css';
+import './styles/branding.css';
+import './styles/polish.css';
+import './styles/page-hero-images.css';
+ReactDOM.createRoot(document.getElementById('root')).render(<React.StrictMode><BrowserRouter><App/></BrowserRouter></React.StrictMode>);
