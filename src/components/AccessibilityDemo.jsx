@@ -1,20 +1,17 @@
-import { useId, useRef, useState } from 'react';
+import { useId, useState } from 'react';
 import { Minus, Plus, Moon, Sun, Contrast, AlignHorizontalSpaceAround, Link2, ScanLine, Rows3, RotateCcw, ChevronDown, Palette, Type, ZoomIn, Eye, ArrowUpRight, Check } from 'lucide-react';
-import CategorySamples from './CategorySamples';
 import LogoMark from './LogoMark';
 import { defaultSettings as defaults, preferenceKey, legacyPreferenceKey, readPreferences } from '../data/demoSettings';
-export default function AccessibilityDemo({ category, showCategorySamples = true }) {
+export default function AccessibilityDemo() {
   const [settings, setSettings] = useState(readPreferences);
-  const [preferenceStatus,setPreferenceStatus]=useState('');const preview=useRef(null);const sizeControl=useRef(null);
   const [more, setMore] = useState(false); const [announcement, setAnnouncement] = useState(''); const id = useId();
   const update = (key, value, label) => { setSettings(s => ({ ...s, [key]: value })); setAnnouncement(`${label}: ${typeof value === 'boolean' ? (value ? 'on' : 'off') : value}.`); };
   const toggle = (key, label) => update(key, !settings[key], label);
-  const savePreferences=()=>{try{window.localStorage.setItem(preferenceKey,JSON.stringify(settings));setPreferenceStatus('The main sample preferences are saved in this browser.');}catch{setPreferenceStatus('Preferences could not be saved. Browser storage may be restricted.');}};
-  const resetPreferences=()=>{setSettings({...defaults});setAnnouncement('All sample settings reset to defaults.');try{window.localStorage.removeItem(preferenceKey);window.localStorage.removeItem(legacyPreferenceKey);setPreferenceStatus('Defaults restored and saved preferences cleared.');}catch{setPreferenceStatus('Defaults restored. Browser storage prevented clearing saved preferences.');}};
+  const resetPreferences=()=>{setSettings({...defaults});setAnnouncement('All sample settings reset to defaults.');try{window.localStorage.removeItem(preferenceKey);window.localStorage.removeItem(legacyPreferenceKey);}catch{setAnnouncement('Defaults restored. Browser storage prevented clearing saved preferences.');}};
   const control = (Icon, label, key) => <button className={`demo-control ${settings[key] ? 'selected' : ''}`} aria-pressed={settings[key]} onClick={() => toggle(key, label)} key={key}><Icon size={18} aria-hidden="true"/><span>{label}</span><span className="toggle-switch" aria-hidden="true"><i/></span></button>;
   const previewClass = `demo-preview theme-${settings.theme} ${settings.spacing ? 'spaced' : ''} ${settings.links || settings.colorCues ? 'highlight-links' : ''} ${settings.grayscale ? 'grayscale' : ''} ${settings.font ? 'reading-font' : ''} ${settings.zoom ? 'sample-zoom' : ''} ${settings.paragraphs?'highlight-paragraphs':''}`;
   return <div className="demo-wrapper">
-    <div className="demo-frame" ref={preview}>
+    <div className="demo-frame">
       <div className="demo-browser-bar"><span className="browser-dots" aria-hidden="true"><i/><i/><i/></span><span>your-everyday.example / inspiration</span><span className="demo-live"><span/> Live preview</span></div>
       <div className="demo-body">
         <div className={previewClass} style={{ '--sample-size': `${settings.textSize * (settings.zoom ? 1.15 : 1) / 100}rem`, '--guide-position': `${settings.position}%` }}>
@@ -28,7 +25,7 @@ export default function AccessibilityDemo({ category, showCategorySamples = true
         <aside className="demo-panel" aria-label="Sample accessibility settings">
           <div className="demo-panel-heading"><span className="panel-logo panel-brand-logo"><LogoMark/></span><div><h3>Make it yours.</h3><p>Small changes. Your comfort.</p></div></div>
           <div className="demo-text-label"><label htmlFor={`${id}-size`}>Text size</label><output htmlFor={`${id}-size`}>{settings.textSize}%</output></div>
-          <div className="demo-size-controls"><button aria-label="Decrease text size" disabled={settings.textSize <= 80} onClick={() => update('textSize', settings.textSize - 10, 'Text size')}><Minus size={17} aria-hidden="true"/></button><input ref={sizeControl} id={`${id}-size`} type="range" min="80" max="150" step="10" value={settings.textSize} onChange={e => update('textSize', Number(e.target.value), 'Text size')} aria-valuetext={`${settings.textSize} percent`}/><button aria-label="Increase text size" disabled={settings.textSize >= 150} onClick={() => update('textSize', settings.textSize + 10, 'Text size')}><Plus size={17} aria-hidden="true"/></button></div>
+          <div className="demo-size-controls"><button aria-label="Decrease text size" disabled={settings.textSize <= 80} onClick={() => update('textSize', settings.textSize - 10, 'Text size')}><Minus size={17} aria-hidden="true"/></button><input id={`${id}-size`} type="range" min="80" max="150" step="10" value={settings.textSize} onChange={e => update('textSize', Number(e.target.value), 'Text size')} aria-valuetext={`${settings.textSize} percent`}/><button aria-label="Increase text size" disabled={settings.textSize >= 150} onClick={() => update('textSize', settings.textSize + 10, 'Text size')}><Plus size={17} aria-hidden="true"/></button></div>
           <p className="control-label">A view that feels right</p>
           <div className="theme-controls">{[[Sun, 'Light', 'light'], [Moon, 'Dark', 'dark'], [Contrast, 'Contrast', 'contrast']].map(([Icon, label, theme]) => <button key={theme} aria-label={`${label} mode`} aria-pressed={settings.theme === theme} onClick={() => update('theme', theme, 'Theme')} className={settings.theme === theme ? 'selected' : ''}><Icon size={20} aria-hidden="true"/><span>{label}</span>{settings.theme === theme && <Check size={11} className="theme-check" aria-hidden="true"/>}</button>)}</div>
           <p className="control-label">A little more clarity</p>
@@ -42,7 +39,6 @@ export default function AccessibilityDemo({ category, showCategorySamples = true
       </div>
     </div>
     <p className="demo-note">An interactive illustration of selected features. Changes affect this sample only; compatibility with every website or device is not guaranteed.</p>
-    {showCategorySamples && <CategorySamples requestedCategory={category} settings={settings} update={update} onApplyProfile={(values,label)=>{setSettings({...values});setAnnouncement(`${label} profile applied to the main sample.`);setPreferenceStatus(`${label} applied. Choose Save preferences to keep this combination.`);}} onSave={savePreferences} onReset={resetPreferences} preferenceStatus={preferenceStatus} onExploreVisual={()=>{preview.current?.scrollIntoView({behavior:'instant',block:'start'});sizeControl.current?.focus({preventScroll:true});}}/>}
     <span className="sr-only" role="status" aria-live="polite" aria-atomic="true">{announcement}</span>
   </div>;
 }
