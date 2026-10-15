@@ -86,7 +86,7 @@ The backend must enforce schema validation, length limits, allowed inquiry types
 
 ## Demo behavior
 
-The interactive demo changes only its sample. It implements text size, three exclusive themes, text spacing, link highlighting, a movable reading guide and mask, grayscale, OpenDyslexic, contained article zoom and redundant category labels. Settings live in React state. Choosing Save preferences in the Personalization sample explicitly saves the main panel settings in local browser storage; Reset restores defaults and clears the saved settings. No account or cloud synchronization is involved. The reading mask does not hide text from screen readers. No claim of universal effectiveness, assistive-technology replacement, full compliance or compatibility with arbitrary websites is made. Static product compositions are marked as illustrative.
+The interactive demo changes only its sample. It implements text size, three exclusive themes, text spacing, link highlighting, a movable reading guide and mask, grayscale, OpenDyslexic, contained article zoom and redundant category labels. Adjustments live in React state. Previously saved main-panel preferences can still be restored from local browser storage; Reset restores defaults and clears them. No account or cloud synchronization is involved. The reading mask does not hide text from screen readers. No claim of universal effectiveness, assistive-technology replacement, full compliance or compatibility with arbitrary websites is made. Static product compositions are marked as illustrative.
 
 ## Accessibility and verification
 
@@ -106,11 +106,11 @@ See `ASSETS.md` for third-party image, font and package references.
 
 The category catalog is transcribed from `53 Accessibility Settings - Category Wise.xlsx`. The workbook contains 52 filled settings across 9 categories; serial number 30 is blank and is not invented. The workbook is read only and is not modified. `src/data/accessibility-settings.json` preserves its setting names, categories and source serial numbers. Descriptions, implementation status and category visuals are authored separately.
 
-The Features page displays all listed settings grouped by category, with category-specific illustrations and direct category links. The home page retains its original visual feature highlights and adds the nine-category overview. The home page’s category samples cover keyboard controls, a supplied caption sequence and transcript, visual notifications, guided reading, motion controls, semantic markup, a local validation form and a confirmation dialog. Speech playback uses browser speech synthesis when available. Voice commands, live captions, flashing-content detection and real authentication remain clearly marked as requiring integration. Hardware/assistive-technology compatibility is not asserted by a visual sample.
+The Features page displays all listed settings grouped by category, with category-specific illustrations and direct category links. The home page retains its original visual feature highlights and nine-category overview. Both pages include the main visual and reading demo. The separate nine-category sample section is hidden on both pages. Browser-dependent and integration-dependent capabilities remain labeled in the catalog; hardware and assistive-technology compatibility is not asserted by a visual example.
 
-Choose Save preferences explicitly to store the main sample settings under `a11yease-demo-preferences-v1` in local storage. Stored values are allowlisted and validated when loaded. Separate category examples do not persist. Reset removes the saved main-panel preferences. Privacy and FAQ copy describe this behavior.
+Previously saved main-panel preferences under a11yease-demo-preferences-v1 or the former brand key are allowlisted and validated when loaded. Reset removes them. The current demo has no save action. Privacy and FAQ copy describe this behavior.
 
-Run `npm run verify:categories` with the local preview running to verify catalog reconciliation, all nine category samples, saved preferences, modal keyboard behavior, responsive layouts and automated accessibility checks. Speech wiring is tested with an injected browser speech fixture; available operating-system voices still require environment-specific testing.
+Run `npm run verify:categories` with the local preview running to verify catalog reconciliation, category links, removal of the category-sample sections, the main demo, responsive layouts and automated accessibility checks.
 
 ## Feature stories and motion checks
 
@@ -120,4 +120,4 @@ Card entrances run once as they enter view; hover movement is limited to fine po
 
 With the dev server running, `npm run verify:polish` checks the new comparisons, keyboard paths, focus visibility, reduced motion, catalog card entrances and CTA reflow. Set `QA_BASE_URL` when the server uses a port other than 5173.
 
-The Features page includes its main visual/reading demo without the “A Sample for Every Perspective” category-sample section. Category samples remain available in the home-page demo. The catalog’s demo link opens the main Features preview.
+The Home and Features pages include the main visual/reading demo without the “A Sample for Every Perspective” category-sample section. The catalog’s demo link opens the main Features preview.
