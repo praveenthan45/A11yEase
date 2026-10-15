@@ -106,11 +106,11 @@ See `ASSETS.md` for third-party image, font and package references.
 
 The category catalog is transcribed from `53 Accessibility Settings - Category Wise.xlsx`. The workbook contains 52 filled settings across 9 categories; serial number 30 is blank and is not invented. The workbook is read only and is not modified. `src/data/accessibility-settings.json` preserves its setting names, categories and source serial numbers. Descriptions, implementation status and category visuals are authored separately.
 
-The Features page includes search, category filtering, all listed settings and category-specific illustrations. The home page retains its original visual feature highlights and adds the nine-category overview. The home page’s category samples cover keyboard controls, a supplied caption sequence and transcript, visual notifications, guided reading, motion controls, semantic markup, a local validation form and a confirmation dialog. Speech playback uses browser speech synthesis when available. Voice commands, live captions, flashing-content detection and real authentication remain clearly marked as requiring integration. Hardware/assistive-technology compatibility is not asserted by a visual sample.
+The Features page displays all listed settings grouped by category, with category-specific illustrations and direct category links. The home page retains its original visual feature highlights and adds the nine-category overview. The home page’s category samples cover keyboard controls, a supplied caption sequence and transcript, visual notifications, guided reading, motion controls, semantic markup, a local validation form and a confirmation dialog. Speech playback uses browser speech synthesis when available. Voice commands, live captions, flashing-content detection and real authentication remain clearly marked as requiring integration. Hardware/assistive-technology compatibility is not asserted by a visual sample.
 
 Choose Save preferences explicitly to store the main sample settings under `a11yease-demo-preferences-v1` in local storage. Stored values are allowlisted and validated when loaded. Separate category examples do not persist. Reset removes the saved main-panel preferences. Privacy and FAQ copy describe this behavior.
 
-Run `npm run verify:categories` with the local preview running to verify catalog reconciliation, search/filter behavior, all nine category samples, saved preferences, modal keyboard behavior, responsive layouts and automated accessibility checks. Speech wiring is tested with an injected browser speech fixture; available operating-system voices still require environment-specific testing.
+Run `npm run verify:categories` with the local preview running to verify catalog reconciliation, all nine category samples, saved preferences, modal keyboard behavior, responsive layouts and automated accessibility checks. Speech wiring is tested with an injected browser speech fixture; available operating-system voices still require environment-specific testing.
 
 ## Feature stories and motion checks
 
@@ -118,6 +118,6 @@ All 52 catalog settings have authored context examples in `src/data/featureExamp
 
 Card entrances run once as they enter view; hover movement is limited to fine pointers. Focused content appears immediately, and system reduced-motion preferences suppress these effects, including when changed during a visit.
 
-With the dev server running, `npm run verify:polish` checks the new comparisons, keyboard paths, focus visibility, reduced motion, dynamically inserted search cards and CTA reflow. Set `QA_BASE_URL` when the server uses a port other than 5173.
+With the dev server running, `npm run verify:polish` checks the new comparisons, keyboard paths, focus visibility, reduced motion, catalog card entrances and CTA reflow. Set `QA_BASE_URL` when the server uses a port other than 5173.
 
 The Features page includes its main visual/reading demo without the “A Sample for Every Perspective” category-sample section. Category samples remain available in the home-page demo. The catalog’s demo link opens the main Features preview.

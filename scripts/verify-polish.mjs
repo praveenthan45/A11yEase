@@ -50,9 +50,6 @@ try {
   assert.equal(await page.locator('.catalog-feature .feature-example').count(),52);
   assert.equal(await page.locator('.catalog-feature .feature-example p').evaluateAll(es=>es.every(e=>e.textContent.trim().length>50)),true);
   await page.emulateMedia({reducedMotion:'no-preference'});
-  await page.getByRole('searchbox',{name:'Search accessibility settings'}).fill('xyz-no-match');
-  await expect(page.getByRole('heading',{name:'No matching settings.'})).toBeVisible();
-  await page.getByRole('button',{name:'Clear Filters',exact:true}).last().click();
   const inserted = page.locator('.catalog-feature').first();
   await inserted.scrollIntoViewIfNeeded(); await expect(inserted).toHaveClass(/reveal-ready/);
   await page.emulateMedia({reducedMotion:'reduce'});

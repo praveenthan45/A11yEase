@@ -17,9 +17,8 @@ try{
   assert.equal(source.length,52);assert.equal(groups.length,9);assert(!source.some(setting=>setting.number===30));
   await page.goto(`${baseURL}/features`);await expect(page.locator('.detailed-features article')).toHaveCount(source.length);await expect(page.locator('.catalog-category')).toHaveCount(groups.length);await expect(page.locator('#category-samples')).toHaveCount(0);await expect(page.locator('#feature-demo .demo-frame')).toHaveCount(1);
   const rendered=await page.locator('.catalog-feature-heading h3').allTextContents();assert.deepEqual(rendered,source.map(setting=>setting.title));
-  await page.getByRole('searchbox',{name:'Search accessibility settings'}).fill('captions');await expect(page.locator('.detailed-features article')).toHaveCount(3);
-  await page.getByRole('button',{name:'Clear Filters',exact:true}).click();await page.getByLabel('Accessibility category',{exact:true}).selectOption('Hearing Accessibility');await expect(page.locator('.detailed-features article')).toHaveCount(4);
-  await page.getByRole('searchbox',{name:'Search accessibility settings'}).fill('not-a-real-setting');await expect(page.getByRole('heading',{name:'No matching settings.'})).toBeVisible();await page.getByRole('button',{name:'Clear Filters',exact:true}).first().click();await expect(page.locator('.detailed-features article')).toHaveCount(52);
+  await expect(page.getByRole('searchbox',{name:'Search accessibility settings'})).toHaveCount(0);
+  await expect(page.getByLabel('Accessibility category',{exact:true})).toHaveCount(0);
   for(const width of [1440,1024,768,480,360]){await page.setViewportSize({width,height:1000});await checkOverflow();await page.locator('main h1').scrollIntoViewIfNeeded();widths.push(width);if(width===1440||width===360){await page.evaluate(()=>document.fonts.ready);await page.screenshot({path:`qa/catalog-${width}.png`});}}
   await page.goto(baseURL);
   for(const width of [1440,360]){
