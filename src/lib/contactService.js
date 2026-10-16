@@ -36,10 +36,20 @@ export function createContactPayload(values, durationMs, endpoint, requestId) {
 }
 
 export async function readContactResponse(response, endpoint) {
-  if (response.status === 429) throw new Error('rate-limit');
+  if (response.status === 429) {
+    const error = new Error('rate-limit');
+    const seconds = Number(response.headers.get('Retry-After'));
+    error.retryAfter = Number.isFinite(seconds) && seconds > 0 ? Math.min(seconds,86400) : 60;
+    throw error;
+  }
   if (isBrandedContactEndpoint(endpoint)) {
     let data;
     try { data = await response.json(); } catch { throw new Error('failed'); }
+    if (!response.ok && ['mail-quota','mail-busy','not-configured','invalid','origin-not-allowed'].includes(data?.code)) {
+      const error = new Error(data.code);
+      if (data.code === 'mail-busy') error.retryAfter = 10;
+      throw error;
+    }
     if (response.status === 409 && data?.code === 'delivery-unknown') throw new Error('delivery-unknown');
     if (!response.ok || data?.success !== true || data?.ownerAccepted !== true || typeof data?.confirmationAccepted !== 'boolean') throw new Error('failed');
     return data.confirmationAccepted ? 'accepted-with-confirmation' : 'accepted-without-confirmation';

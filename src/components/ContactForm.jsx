@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, LoaderCircle, CheckCircle2, AlertCircle } from 'lucide-react';
 import { site } from '../config/site';
@@ -17,21 +17,24 @@ function validate(values) {
 }
 export default function ContactForm() {
   const [values, setValues] = useState(empty); const [errors, setErrors] = useState({}); const [status, setStatus] = useState({ type: '', message: '' });
-  const started = useRef(Date.now()); const lastAttempt = useRef(0); const formRef = useRef(null);
+  const started = useRef(Date.now()); const formRef = useRef(null); const sending = useRef(false);
+  const [retryAt,setRetryAt] = useState(0); const [clock,setClock] = useState(Date.now());
+  const remaining = Math.max(0,Math.ceil((retryAt-clock)/1000));
+  useEffect(() => { if (!retryAt) return; const timer = window.setInterval(() => { setClock(Date.now()); if (Date.now() >= retryAt) setRetryAt(0); },1000); return () => window.clearInterval(timer); },[retryAt]);
   const requestId = useRef(null);
   const change = e => { const { name, value, checked, type } = e.target; setValues(v => ({ ...v, [name]: type === 'checkbox' ? checked : value })); if (errors[name]) setErrors(prev => ({ ...prev, [name]: undefined })); };
   const submit = async e => {
-    e.preventDefault(); if (status.type === 'loading') return;
+    e.preventDefault(); if (sending.current || Date.now() < retryAt) return;
     const nextErrors = validate(values); setErrors(nextErrors);
     if (Object.keys(nextErrors).length) { setStatus({ type: 'error', message: 'Please check the highlighted fields before sending.' }); requestAnimationFrame(() => formRef.current?.elements[Object.keys(nextErrors)[0]]?.focus()); return; }
     if (!site.contactEndpoint) { setStatus({ type: 'info', message: 'Message not sent: this preview has no contact service connected. A production endpoint must be configured before messages can be delivered.' }); return; }
     if (values.website || Date.now() - started.current < 3000) { setStatus({ type: 'error', message: 'Unable to submit yet. Please wait a moment and try again.' }); return; }
-    if (Date.now() - lastAttempt.current < 30000) { setStatus({ type: 'error', message: 'Please wait 30 seconds between submission attempts.' }); return; }
-    lastAttempt.current = Date.now(); setStatus({ type: 'loading', message: 'Sending your message…' });
-    requestId.current ||= crypto.randomUUID();
+    sending.current = true; setStatus({ type: 'loading', message: 'Sending your message…' });
+    const signature = JSON.stringify(values);
+    if (!requestId.current || requestId.current.signature !== signature) requestId.current = { signature,id:crypto.randomUUID() };
     const controller = new AbortController(); const timeout = window.setTimeout(() => controller.abort(), 40000);
     try {
-      const response = await fetch(site.contactEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(createContactPayload(values, Date.now() - started.current, site.contactEndpoint, requestId.current)), signal: controller.signal });
+      const response = await fetch(site.contactEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(createContactPayload(values, Date.now() - started.current, site.contactEndpoint, requestId.current.id)), signal: controller.signal });
       const result = await readContactResponse(response, site.contactEndpoint);
       if (result === 'activation-required') {
         setStatus({ type: 'info', message: `Message delivery is awaiting verification of our receiving mailbox. Your details are still here. Please email ${site.supportEmail} directly in the meantime.` });
@@ -43,8 +46,19 @@ export default function ContactForm() {
           ? 'Your inquiry was accepted, but we could not confirm the thank-you email. Our team will respond as soon as possible. You do not need to submit again.'
           : 'Your message was accepted for delivery. Thank you for reaching out.';
       setStatus({ type: 'success', message }); setValues(empty); started.current = Date.now(); requestId.current = null;
-    } catch (error) { setStatus({ type: 'error', message: error.message === 'rate-limit' ? 'Too many requests. Please try again later.' : error.message === 'delivery-unknown' || (error.name === 'AbortError' && isBrandedContactEndpoint(site.contactEndpoint)) ? `We could not confirm delivery. Please email ${site.supportEmail} if you need help. Your details are still here; retrying this form keeps the same inquiry reference.` : 'Your message could not be sent. Your details are still here; please try again later.' }); }
-    finally { window.clearTimeout(timeout); }
+    } catch (error) {
+      if (error.retryAfter) { setClock(Date.now()); setRetryAt(Date.now()+error.retryAfter*1000); }
+      const messages = {
+        'rate-limit': `The contact service has temporarily limited submissions. The send button will become available after the waiting time. You can email ${site.supportEmail} instead.`,
+        'mail-quota': `Our email service has reached its sending limit. Your message has not been sent. Please email ${site.supportEmail} directly.`,
+        'mail-busy': 'The email service is handling another inquiry. Please retry when the send button becomes available. Your details are saved in this form.',
+        'not-configured': `The contact service needs attention. Your message has not been sent. Please email ${site.supportEmail} directly.`,
+        'origin-not-allowed': `Sending is not enabled for this website address. Please email ${site.supportEmail} directly.`,
+        'invalid': 'The contact service could not validate these details. Please check the name, email and message fields before retrying.',
+      };
+      setStatus({ type: 'error', message: messages[error.message] || (error.message === 'delivery-unknown' || ((error.name === 'AbortError' || error instanceof TypeError) && isBrandedContactEndpoint(site.contactEndpoint)) ? `We could not confirm delivery. Please email ${site.supportEmail} if you need help. Your details are still here; retrying the same details keeps the same inquiry reference.` : 'Your message could not be sent. Your details are still here; you can retry now.') });
+    }
+    finally { window.clearTimeout(timeout); sending.current = false; }
   };
   const field = (name, label, props = {}) => <div className="form-field"><label htmlFor={`contact-${name}`}>{label}{props.required ? <span className="required"> (required)</span> : <span> (optional)</span>}</label><input id={`contact-${name}`} name={name} value={values[name]} onChange={change} aria-invalid={!!errors[name]} aria-describedby={errors[name] ? `error-${name}` : undefined} {...props}/>{errors[name] && <p className="field-error" id={`error-${name}`}><AlertCircle size={14} aria-hidden="true"/>{errors[name]}</p>}</div>;
   return <form ref={formRef} className="contact-form" noValidate onSubmit={submit}>
@@ -57,7 +71,7 @@ export default function ContactForm() {
     <div className="consent-field"><label><input type="checkbox" name="consent" checked={values.consent} onChange={change} required aria-invalid={!!errors.consent} aria-describedby={errors.consent ? 'error-consent' : 'privacy-notice'}/><span>I understand that my contact details and message will be used to respond to this inquiry. <span className="required">(required)</span></span></label>{errors.consent && <p className="field-error" id="error-consent">{errors.consent}</p>}</div>
     <p id="privacy-notice" className="privacy-notice">{isFormSubmitEndpoint(site.contactEndpoint) ? <>Your contact details and message are shared with FormSubmit to forward your inquiry to {site.supportEmail}. </> : isBrandedContactEndpoint(site.contactEndpoint) ? <>Your contact details and message are processed through our Google Apps Script email service to send your inquiry to {site.supportEmail} and send you an automatic acknowledgment. </> : <>Your contact details and message are shared with our configured contact service to respond to your inquiry. </>}Read our <Link to="/privacy">privacy notice</Link>, which is currently a review draft.</p>
     {!site.contactEndpoint && <div className="integration-notice"><AlertCircle size={17} aria-hidden="true"/><p><strong>Preview mode · sending is not connected.</strong> You can explore and validate the form. Messages will not be delivered until the contact service is configured.</p></div>}
-    <button className="button button-primary" type="submit" disabled={status.type === 'loading'}>{status.type === 'loading' ? <><LoaderCircle className="spin" size={18} aria-hidden="true"/> Sending…</> : <>Send Message <ArrowUpRight size={18} aria-hidden="true"/></>}</button>
+    <button className="button button-primary" type="submit" disabled={status.type === 'loading' || remaining > 0}>{status.type === 'loading' ? <><LoaderCircle className="spin" size={18} aria-hidden="true"/> Sending…</> : remaining > 0 ? `Try again in ${remaining >= 60 ? `${Math.ceil(remaining/60)} min` : `${remaining}s`}` : <>Send Message <ArrowUpRight size={18} aria-hidden="true"/></>}</button>
     <div className={`form-status status-${status.type}`} role="status" aria-live="polite" aria-atomic="true">{status.message && <>{status.type === 'success' ? <CheckCircle2 size={19} aria-hidden="true"/> : <AlertCircle size={19} aria-hidden="true"/>}<p>{status.message}</p></>}</div>
   </form>;
 }

@@ -2,19 +2,22 @@ import { validateContact } from './contact-validation.mjs';
 
 export function createContactApi({ env = {}, fetchImpl = fetch, now = Date.now } = {}) {
   const clients = new Map();
-  const json = (status, data, origin) => new Response(JSON.stringify(data), {
-    status, headers:{'Content-Type':'application/json','Cache-Control':'no-store',...(origin ? {'Access-Control-Allow-Origin':origin,'Vary':'Origin'} : {})},
+  const json = (status, data, origin, retryAfter) => new Response(JSON.stringify(data), {
+    status, headers:{'Content-Type':'application/json','Cache-Control':'no-store',...(retryAfter ? {'Retry-After':String(retryAfter)} : {}),...(origin ? {'Access-Control-Allow-Origin':origin,'Vary':'Origin','Access-Control-Expose-Headers':'Retry-After'} : {})},
   });
   return async function contactApi(request, clientId = 'unknown') {
     const origin = request.headers.get('origin');
     const allowed = new Set((env.CONTACT_ALLOWED_ORIGINS || '').split(',').map(value => value.trim()).filter(Boolean));
-    if (!origin || !allowed.has(origin)) return json(403,{ success:false },null);
+    if (!origin || !allowed.has(origin)) return json(403,{ success:false,code:'origin-not-allowed' },null);
     if (request.method === 'OPTIONS') return new Response(null,{status:204,headers:{'Access-Control-Allow-Origin':origin,'Vary':'Origin','Access-Control-Allow-Methods':'POST','Access-Control-Allow-Headers':'Content-Type','Access-Control-Max-Age':'600'}});
     if (request.method !== 'POST') return json(405,{success:false},origin);
     const stamp = now();
     for (const [key,record] of clients) if (stamp - record.at >= 3600000) clients.delete(key);
     const record = clients.get(clientId) || { at:stamp, count:0 };
-    if (record.count >= 5 || (!clients.has(clientId) && clients.size >= 10000)) return json(429,{success:false},origin);
+    if (record.count >= 5 || (!clients.has(clientId) && clients.size >= 10000)) {
+      const retryAfter = Math.max(1,Math.ceil((record.at + 3600000 - stamp)/1000));
+      return json(429,{success:false,code:'rate-limit',retryAfter},origin,retryAfter);
+    }
     record.count++; clients.set(clientId,record);
     let scriptUrl;
     try {
@@ -38,7 +41,7 @@ export function createContactApi({ env = {}, fetchImpl = fetch, now = Date.now }
       for (const chunk of chunks) { bytes.set(chunk,offset); offset += chunk.length; }
       input = JSON.parse(new TextDecoder().decode(bytes));
       validateContact(input);
-    } catch { return json(400,{success:false},origin); }
+    } catch { return json(400,{success:false,code:'invalid'},origin); }
     try {
       const response = await fetchImpl(scriptUrl.href,{
         method:'POST',headers:{'Content-Type':'application/json'},
@@ -50,7 +53,11 @@ export function createContactApi({ env = {}, fetchImpl = fetch, now = Date.now }
       if (result.success === true && result.ownerAccepted === true && typeof result.confirmationAccepted === 'boolean') {
         return json(202,{success:true,ownerAccepted:true,confirmationAccepted:result.confirmationAccepted},origin);
       }
-      if (result.code === 'rate-limit') return json(429,{success:false},origin);
+      if (result.code === 'rate-limit') return json(429,{success:false,code:'rate-limit',retryAfter:3600},origin,3600);
+      if (result.code === 'quota') return json(503,{success:false,code:'mail-quota'},origin);
+      if (result.code === 'busy') return json(503,{success:false,code:'mail-busy',retryAfter:10},origin,10);
+      if (result.code === 'invalid') return json(400,{success:false,code:'invalid'},origin);
+      if (result.code === 'unauthorized') return json(503,{success:false,code:'not-configured'},origin);
       if (result.code === 'delivery-unknown') return json(409,{success:false,code:'delivery-unknown'},origin);
       return json(503,{success:false},origin);
     } catch {

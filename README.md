@@ -81,7 +81,9 @@ Every Get Started link opens `/contact`. The official email is `gen.praveenthan@
 
 The JSON request includes `_subject` for the inquiry subject, `_replyto` for replying to the visitor, `_template=table`, and `_honey` for the existing honeypot. No SMTP password or API key is bundled. FormSubmit processes the submitted fields, as disclosed alongside the consent checkbox and in the draft privacy notice. Its activation is required independently of deployment; changing hosts/domains may require another verification. The service's anti-spam controls are retained.
 
-The form checks FormSubmit's JSON `success` field even on HTTP 200. Activation-required and failure responses preserve entered details; only acceptance clears the form. Timeout, loading, validation and the 30-second retry interval remain in place.
+The form checks FormSubmit's JSON `success` field even on HTTP 200. Activation-required and failure responses preserve entered details; only acceptance clears the form. Sending disables the button immediately to prevent double submissions. A definite failure can be retried immediately; server rate limits show a disabled send button with the remaining wait time. Uncertain retries preserve the inquiry reference for unchanged details. Changing the visitor details creates a new inquiry reference.
+
+The branded API distinguishes invalid fields, sending quota, a busy mail service, configuration issues and unknown delivery. These errors no longer share one generic message. Run `npm run verify:contact-retry` against a local preview configured with `VITE_CONTACT_API_URL=/api/contact` to check retry behavior and different visitor addresses without sending email.
 
 Run `npm run test:contact` for response/payload checks. With a local preview running, `npm run verify:contact` checks routing, mobile navigation, validation, activation, rate limits and accepted/failed submissions with intercepted requests. Those checks send no emails.
 

@@ -76,6 +76,8 @@ Submit the contact form with an email address you can access. Confirm the owner 
 
 ## Behavior and maintenance
 
+The form allows an immediate retry after definite rejection. Only an actual server rate limit or busy-service response starts the visible retry countdown. The API returns safe error codes for invalid details, quota, busy state, missing configuration and origin rejection; the form retains entered details. Unknown delivery keeps the same request ID for unchanged details, while a changed email address or message receives a new ID. There is no recipient allowlist limiting submissions to the owner mailbox.
+
 - Both recipients and templates are constructed by trusted code. Visitors cannot supply custom HTML, headers or a recipient list. Owner notifications go to the fixed support mailbox; the visitor receipt contains no copy of the private inquiry.
 - Server validation, a 16 KB request limit, exact allowed origins, a five-attempt/hour per-client process-local throttle, and a script-side three-inquiry/hour per-recipient throttle supplement the form's existing controls. These are basic protections; use an edge rate limit and a bot challenge as traffic grows. Origins and client timing are not authentication.
 - The script serializes sends with a lock and retains request IDs and delivery flags in Script Properties for up to 24 hours; it does not persist inquiry text or visitor email there. Expired records are removed on the next valid request. Email messages still exist in the sending and receiving mail systems according to those systems' settings. Cache-based throttles are best effort and may reset if Google evicts entries.

@@ -73,6 +73,29 @@ test('API and UI distinguish partial email failure, uncertainty and false succes
   assert.equal(createContactPayload(contact,5000,'/api/contact',contact.requestId).requestId,contact.requestId);
 });
 
+test('different visitor mailboxes keep the owner fixed and route acknowledgment to the visitor', () => {
+  for (const email of ['gen.rahulramesh@gmail.com','another.reader@outlook.com','reader+access@example.org']) {
+    const emails = buildContactEmails(validateContact({...contact,email}));
+    assert.equal(emails.owner.to,'gen.praveenthan@gmail.com');
+    assert.equal(emails.visitor.to,email);
+    assert.equal(emails.owner.replyTo,email);
+  }
+});
+
+test('provider rejections produce actionable messages and explicit retry timing', async () => {
+  for (const [providerCode,code,status] of [['quota','mail-quota',503],['busy','mail-busy',503],['invalid','invalid',400],['unauthorized','not-configured',503]]) {
+    const api = createContactApi({env,fetchImpl:async()=>Response.json({success:false,code:providerCode})});
+    const response = await api(request());
+    assert.equal(response.status,status);
+    const result = await response.clone().json(); assert.equal(result.code,code);
+    await assert.rejects(readContactResponse(response,'/api/contact'),error=>error.message===code);
+  }
+  const api = createContactApi({env,fetchImpl:async()=>Response.json({success:false,code:'rate-limit'})});
+  const response = await api(request());
+  assert.equal(response.headers.get('Retry-After'),'3600');
+  await assert.rejects(readContactResponse(response,'/api/contact'),error=>error.message==='rate-limit' && error.retryAfter===3600);
+});
+
 const code = await readFile(new URL('../integrations/google-apps-script/Code.gs',import.meta.url),'utf8');
 function scriptFixture({ failOn=0,quota=100 }={}) {
   const properties=new Map([['CONTACT_SCRIPT_TOKEN',token]]),cache=new Map(),sent=[];

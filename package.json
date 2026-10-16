@@ -12,6 +12,7 @@
     "verify:email": "node scripts/verify-email.mjs",
     "test:contact": "node --test scripts/test-contact-service.mjs",
     "verify:contact": "node scripts/verify-contact.mjs",
+    "verify:contact-retry": "node scripts/verify-contact-retry.mjs",
     "preview": "vite preview --host 127.0.0.1",
     "verify": "node scripts/verify.mjs",
     "verify:categories": "node scripts/verify-categories.mjs",

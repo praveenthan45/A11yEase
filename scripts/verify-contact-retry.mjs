@@ -1,0 +1,43 @@
+import { chromium,expect } from '@playwright/test';
+import assert from 'node:assert/strict';
+const browser=await chromium.launch({executablePath:process.env.QA_BROWSER_PATH || 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',headless:true});
+try {
+  const context=await browser.newContext({viewport:{width:360,height:900}});
+  const page=await context.newPage(); await page.clock.install();
+  let status=503,body={success:false,code:'mail-quota'},delay=0;
+  const payloads=[];
+  await context.route('**/api/contact',async route=>{
+    payloads.push(route.request().postDataJSON());
+    if(delay)await new Promise(resolve=>setTimeout(resolve,delay));
+    await route.fulfill({status,contentType:'application/json',headers:status===429?{'Retry-After':'5'}:{},body:JSON.stringify(body)});
+  });
+  await page.goto((process.env.QA_BASE_URL || 'http://127.0.0.1:5188')+'/contact');
+  await page.getByLabel('Full Name').fill('Alternate account test');
+  await page.getByLabel('Email Address').fill('gen.rahulramesh@gmail.com');
+  await page.getByLabel('Subject').fill('Delivery test');
+  await page.getByLabel('Message (required)',{exact:true}).fill('An intercepted test of a different visitor email address.');
+  await page.getByRole('checkbox').check(); await page.clock.fastForward(3100);
+  const send=()=>page.getByRole('button',{name:'Send Message',exact:true});
+  await send().click(); await expect(page.getByRole('status')).toContainText('sending limit');
+  await expect(send()).toBeEnabled();
+  body={success:false,code:'not-configured'};
+  await send().click(); await expect(page.getByRole('status')).toContainText('needs attention');
+  assert.equal(payloads.length,2,'Definite failures must allow an immediate retry');
+  assert.equal(payloads[0].requestId,payloads[1].requestId);
+  status=429;body={success:false,code:'rate-limit'};
+  await send().click(); await expect(page.getByRole('button',{name:'Try again in 5s'})).toBeDisabled();
+  await page.clock.fastForward(5100); await expect(send()).toBeEnabled();
+  status=409;body={success:false,code:'delivery-unknown'};
+  await send().click();await expect(page.getByRole('status')).toContainText('could not confirm delivery');
+  await expect(page.getByLabel('Email Address')).toHaveValue('gen.rahulramesh@gmail.com');
+  await page.getByLabel('Email Address').fill('another.visitor@example.org');
+  status=202;body={success:true,ownerAccepted:true,confirmationAccepted:true};delay=500;
+  await send().click();await expect(page.getByRole('button',{name:'Sending…'})).toBeDisabled();
+  await expect(page.getByRole('status')).toContainText('thank-you email were accepted');
+  assert.notEqual(payloads.at(-1).requestId,payloads[0].requestId,'Changing visitor details needs a new inquiry reference');
+  assert.equal(payloads.at(-1).email,'another.visitor@example.org');
+  await expect(page.getByLabel('Full Name')).toHaveValue('');
+  assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  await page.screenshot({path:'qa/email/retry-fixed-360.png',fullPage:true});
+  console.log(JSON.stringify({immediateRetryAfterFailure:'passed',serverRetryCountdown:'passed',alternateAddressRouting:'passed',requestIdentity:'passed',inFlightGuard:'passed',emailsSent:0}));
+} finally { await browser.close(); }

@@ -56,11 +56,8 @@ try {
   assert.equal(payloads[0]._subject,'A11yEase · Product Demo: Guided product demonstration');
   assert.equal(payloads[0].consent,true);
   assert.equal(payloads[0]._honey,'');
-  await page.getByRole('button',{name:'Send Message',exact:true}).click();
-  await expect(page.locator('.form-status')).toContainText('30 seconds');
-  assert.equal(payloads.length,1,'Cooldown must prevent duplicate requests');
-  for(const [nextMode,expected] of [['failure','could not be sent'],['rate-limit','Too many requests'],['malformed','could not be sent']]){
-    mode=nextMode;await page.clock.fastForward(30001);
+  for(const [nextMode,expected] of [['failure','could not be sent'],['rate-limit','temporarily limited submissions'],['malformed','could not be sent']]){
+    mode=nextMode;await page.clock.fastForward(60001);
     await page.getByRole('button',{name:'Send Message',exact:true}).click();
     await expect(page.locator('.form-status')).toContainText(expected);
     await expect(page.getByLabel('Email Address',{exact:false})).toHaveValue('reader@example.test');
