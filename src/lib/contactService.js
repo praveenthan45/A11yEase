@@ -5,7 +5,12 @@ export function isFormSubmitEndpoint(endpoint) {
   } catch { return false; }
 }
 
-export function createContactPayload(values, durationMs, endpoint) {
+export function isBrandedContactEndpoint(endpoint) {
+  try { return new URL(endpoint, 'https://local.example').pathname === '/api/contact'; }
+  catch { return false; }
+}
+
+export function createContactPayload(values, durationMs, endpoint, requestId) {
   const payload = {
     fullName: values.fullName.trim(),
     email: values.email.trim(),
@@ -17,6 +22,7 @@ export function createContactPayload(values, durationMs, endpoint) {
     website: values.website,
     source: 'a11yease-contact',
     formDurationMs: durationMs,
+    ...(requestId ? { requestId } : {}),
   };
   if (!isFormSubmitEndpoint(endpoint)) return payload;
   return {
@@ -31,6 +37,13 @@ export function createContactPayload(values, durationMs, endpoint) {
 
 export async function readContactResponse(response, endpoint) {
   if (response.status === 429) throw new Error('rate-limit');
+  if (isBrandedContactEndpoint(endpoint)) {
+    let data;
+    try { data = await response.json(); } catch { throw new Error('failed'); }
+    if (response.status === 409 && data?.code === 'delivery-unknown') throw new Error('delivery-unknown');
+    if (!response.ok || data?.success !== true || data?.ownerAccepted !== true || typeof data?.confirmationAccepted !== 'boolean') throw new Error('failed');
+    return data.confirmationAccepted ? 'accepted-with-confirmation' : 'accepted-without-confirmation';
+  }
   if (!isFormSubmitEndpoint(endpoint)) {
     if (!response.ok) throw new Error('failed');
     return 'accepted';

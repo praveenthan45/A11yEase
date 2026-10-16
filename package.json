@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
-    "start": "serve -s dist --no-clipboard --no-port-switching",
+    "start": "node server/index.mjs",
+    "build:email": "node scripts/build-email-script.mjs",
+    "test:email": "node --test scripts/test-email.mjs",
+    "verify:email": "node scripts/verify-email.mjs",
     "test:contact": "node --test scripts/test-contact-service.mjs",
     "verify:contact": "node scripts/verify-contact.mjs",
     "preview": "vite preview --host 127.0.0.1",
@@ -19,7 +22,8 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.4",
-    "serve": "14.2.6"
+    "serve": "14.2.6",
+    "serve-handler": "6.1.7"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",

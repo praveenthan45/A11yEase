@@ -33,7 +33,7 @@ For the existing Render **Web Service**, select the **Node** runtime and use the
 | Build Command | `npm ci --include=dev && npm run build` |
 | Start Command | `npm start` |
 
-The build command explicitly installs Vite and the other build dependencies, including when `NODE_ENV=production` is set. The start command runs the installed `serve` production dependency against the existing `dist/` output. It reads Render's `PORT` environment variable, accepts connections on all interfaces, and serves `index.html` for client-side routes such as `/features` and `/contact`. No package download or Vite rebuild is needed at startup. Locally, its default port is 3000.
+The build command explicitly installs Vite and the other build dependencies, including when `NODE_ENV=production` is set. The start command runs `server/index.mjs`, serving the existing `dist/` output and the optional branded-email `/api/contact` endpoint. It reads Render's `PORT` environment variable, accepts connections on all interfaces, and serves `index.html` for client-side routes such as `/features` and `/contact`. No package download or Vite rebuild is needed at startup. Locally, its default port is 3000.
 
 Keep the build command in **Build Command** only. If the deployment log says it is running `npm ci && npm run build` during startup, edit **Start Command** to `npm start`, save the settings, and redeploy the latest commit.
 
@@ -62,6 +62,14 @@ The default endpoint is the selected FormSubmit integration. Keep the recipient 
 `src/config/site.js` centralizes site metadata and navigation. Add genuine social links to its `socials` array only after verification. Set the real site URL to enable absolute canonical and Open Graph URL/image metadata. The share image and favicon are original branded artwork.
 
 ## Contact email delivery
+
+### Branded visitor thank-you emails
+
+The Google Apps Script integration includes a personalized visitor acknowledgment and an owner notification, both with the supplied A11yEase logo embedded in the email. The secure Node API keeps the shared token on the server, validates submissions and distinguishes inquiry acceptance from receipt failure. It is ready for configuration; the default FormSubmit connection remains active until the real Google deployment and server configuration are supplied.
+
+Follow [the setup guide](docs/CONTACT_EMAIL_SETUP.md) for the Gmail authorization, Apps Script deployment, Render variables and connection of the original hosted site. Run `npm run build:email` to generate `Code.gs` and local HTML previews, and `npm run test:email` for templates, validation, sending-state handling and the actual generated Apps Script using a mocked MailApp. Automated tests send no emails.
+
+### Existing FormSubmit forwarding
 
 Every Get Started link opens `/contact`. The official email is `gen.praveenthan@gmail.com`.
 
