@@ -94,6 +94,8 @@ test('provider rejections produce actionable messages and explicit retry timing'
   const response = await api(request());
   assert.equal(response.headers.get('Retry-After'),'3600');
   await assert.rejects(readContactResponse(response,'/api/contact'),error=>error.message==='rate-limit' && error.retryAfter===3600);
+  await assert.rejects(readContactResponse(new Response('',{status:401}),'/api/contact'),/site-access/);
+  await assert.rejects(readContactResponse(new Response('<html>Access denied</html>',{status:403}),'/api/contact'),/site-access/);
 });
 
 const code = await readFile(new URL('../integrations/google-apps-script/Code.gs',import.meta.url),'utf8');

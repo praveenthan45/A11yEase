@@ -43,14 +43,16 @@ export async function readContactResponse(response, endpoint) {
     throw error;
   }
   if (isBrandedContactEndpoint(endpoint)) {
+    if (response.status === 401 || response.redirected && /(?:signin|login|auth)/i.test(response.url)) throw new Error('site-access');
     let data;
-    try { data = await response.json(); } catch { throw new Error('failed'); }
+    try { data = await response.json(); } catch { throw new Error(response.status === 403 ? 'site-access' : 'failed'); }
     if (!response.ok && ['mail-quota','mail-busy','not-configured','invalid','origin-not-allowed'].includes(data?.code)) {
       const error = new Error(data.code);
       if (data.code === 'mail-busy') error.retryAfter = 10;
       throw error;
     }
     if (response.status === 409 && data?.code === 'delivery-unknown') throw new Error('delivery-unknown');
+    if (response.status === 403) throw new Error('site-access');
     if (!response.ok || data?.success !== true || data?.ownerAccepted !== true || typeof data?.confirmationAccepted !== 'boolean') throw new Error('failed');
     return data.confirmationAccepted ? 'accepted-with-confirmation' : 'accepted-without-confirmation';
   }

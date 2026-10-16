@@ -54,6 +54,7 @@ export default function ContactForm() {
         'mail-busy': 'The email service is handling another inquiry. Please retry when the send button becomes available. Your details are saved in this form.',
         'not-configured': `The contact service needs attention. Your message has not been sent. Please email ${site.supportEmail} directly.`,
         'origin-not-allowed': `Sending is not enabled for this website address. Please email ${site.supportEmail} directly.`,
+        'site-access': `Your website session does not have permission to submit this form. Reopen the site with an authorized account, or email ${site.supportEmail} directly.`,
         'invalid': 'The contact service could not validate these details. Please check the name, email and message fields before retrying.',
       };
       setStatus({ type: 'error', message: messages[error.message] || (error.message === 'delivery-unknown' || ((error.name === 'AbortError' || error instanceof TypeError) && isBrandedContactEndpoint(site.contactEndpoint)) ? `We could not confirm delivery. Please email ${site.supportEmail} if you need help. Your details are still here; retrying the same details keeps the same inquiry reference.` : 'Your message could not be sent. Your details are still here; you can retry now.') });
