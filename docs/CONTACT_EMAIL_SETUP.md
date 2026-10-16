@@ -1,5 +1,19 @@
 # Enable branded A11yEase contact emails
 
+## Current hosted integration
+
+The original hosted Sites copy is activated at https://accessease-digital-comfort.gen-praveenb.chatgpt.site/contact. Google authorization and the token-protected Web app deployment are complete. Inquiry and thank-you messages were verified in the receiving Gmail inbox, and the published form passed a live submission test. The logo is attached inline in both messages.
+
+The deployed Google script URL (public configuration; not the private shared token) is:
+
+```text
+https://script.google.com/macros/s/AKfycbz87A0LCy7JHZpsJXBycXdy4IqxNoM-XcVdxwqj-R8Y54BUVOK4ax9ttyc_PYPDVgE66A/exec
+```
+
+The shared token is stored only in Google Script Properties and the Sites runtime secret. This repository contains no token value. Enabling the separate Render copy still requires its server-only environment configuration; its working FormSubmit default is retained until that setup is complete.
+
+## Setup for another deployment
+
 The existing FormSubmit inbox forwarding remains the default until you enable this integration. FormSubmit's AJAX endpoint cannot send autoresponses. This integration replaces that forwarding with **two Google MailApp emails**: a branded inquiry notification to `gen.praveenthan@gmail.com`, and a branded acknowledgment to the visitor. Both contain the supplied A11yEase logo as an inline PNG and a plain-text fallback.
 
 Visitor subject: **Thank you for contacting A11yEase**

@@ -65,6 +65,8 @@ The default endpoint is the selected FormSubmit integration. Keep the recipient 
 
 ### Branded visitor thank-you emails
 
+The [original hosted contact page](https://accessease-digital-comfort.gen-praveenb.chatgpt.site/contact) is now connected to Google Apps Script. Both branded emails were delivered to the receiving Gmail inbox, and a submission through the published contact form confirmed inquiry and acknowledgment acceptance. This GitHub/Render copy retains its existing FormSubmit default until its own server environment is configured as described below; changing that deployment's provider requires the Render settings in the setup guide.
+
 The Google Apps Script integration includes a personalized visitor acknowledgment and an owner notification, both with the supplied A11yEase logo embedded in the email. The secure Node API keeps the shared token on the server, validates submissions and distinguishes inquiry acceptance from receipt failure. It is ready for configuration; the default FormSubmit connection remains active until the real Google deployment and server configuration are supplied.
 
 Follow [the setup guide](docs/CONTACT_EMAIL_SETUP.md) for the Gmail authorization, Apps Script deployment, Render variables and connection of the original hosted site. Run `npm run build:email` to generate `Code.gs` and local HTML previews, and `npm run test:email` for templates, validation, sending-state handling and the actual generated Apps Script using a mocked MailApp. Automated tests send no emails.
