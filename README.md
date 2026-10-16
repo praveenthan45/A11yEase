@@ -49,19 +49,33 @@ A Render **Static Site** can also serve this frontend. Use the same build comman
 
 ## Configuration
 
-Copy `.env.example` to `.env.local` and set public build-time values:
+The default contact setup forwards through FormSubmit to `gen.praveenthan@gmail.com`; no frontend secrets or extra environment variables are needed. The receiving mailbox must activate its FormSubmit verification email before delivery works. Copy `.env.example` to `.env.local` only to override public build-time values:
 
 ```dotenv
-VITE_CONTACT_API_URL=https://your-verified-service.example/contact
-VITE_SUPPORT_EMAIL=your-verified-support-address
+VITE_CONTACT_API_URL=https://formsubmit.co/ajax/gen.praveenthan@gmail.com
+VITE_SUPPORT_EMAIL=gen.praveenthan@gmail.com
 VITE_SITE_URL=https://your-real-site-origin
 ```
 
-The example endpoint is illustrative: replace it with your real service. These values are bundled into the frontend. Never store a token, SMTP password or API secret in a `VITE_` variable. Restart Vite after changes; rebuild for production. No fake email, phone, office location, social profile, staff member, customer quote or compliance badge is included.
+The default endpoint is the selected FormSubmit integration. Keep the recipient consistent with your actual mailbox. Set a different endpoint only when connecting a replacement API. These values are bundled into the frontend. Never store a token, SMTP password or API secret in a `VITE_` variable. Restart Vite after changes; rebuild for production. No fake email, phone, office location, social profile, staff member, customer quote or compliance badge is included.
 
 `src/config/site.js` centralizes site metadata and navigation. Add genuine social links to its `socials` array only after verification. Set the real site URL to enable absolute canonical and Open Graph URL/image metadata. The share image and favicon are original branded artwork.
 
-## Contact API contract
+## Contact email delivery
+
+Every Get Started link opens `/contact`. The official email is `gen.praveenthan@gmail.com`.
+
+1. Submit the form once to request FormSubmit activation (a setup request was initiated during integration).
+2. Open the receiving mailbox, check Inbox/Spam, and click **Activate Form** in the FormSubmit email.
+3. Submit a new inquiry from the published website and confirm it arrives. Provider acceptance alone does not verify inbox delivery.
+
+The JSON request includes `_subject` for the inquiry subject, `_replyto` for replying to the visitor, `_template=table`, and `_honey` for the existing honeypot. No SMTP password or API key is bundled. FormSubmit processes the submitted fields, as disclosed alongside the consent checkbox and in the draft privacy notice. Its activation is required independently of deployment; changing hosts/domains may require another verification. The service's anti-spam controls are retained.
+
+The form checks FormSubmit's JSON `success` field even on HTTP 200. Activation-required and failure responses preserve entered details; only acceptance clears the form. Timeout, loading, validation and the 30-second retry interval remain in place.
+
+Run `npm run test:contact` for response/payload checks. With a local preview running, `npm run verify:contact` checks routing, mobile navigation, validation, activation, rate limits and accepted/failed submissions with intercepted requests. Those checks send no emails.
+
+## Custom contact API contract
 
 The controlled form POSTs JSON with these keys:
 
@@ -82,7 +96,7 @@ The controlled form POSTs JSON with these keys:
 
 Return a 2xx response only when the message is accepted. Return 429 for server rate limiting, and a suitable 4xx/5xx for rejection or failure. A 2xx acknowledgment does not prove an email arrived, so the UI says the service accepted the message. The UI includes associated validation errors, focus on the first error, an announced status, loading, failure and success states, a 15-second timeout, a honeypot, a minimum form duration and a 30-second interval between actual submission attempts. Failed submissions preserve the entered data.
 
-The backend must enforce schema validation, length limits, allowed inquiry types, CSRF/origin protections appropriate to its authentication model, spam controls and server rate limiting. Allow the site’s origin through CORS if the endpoint is on another origin. Do not trust client timing, the honeypot or client-side validation. Keep mail credentials and routing logic server-side. Finalize recipient, retention, consent requirements and privacy information before enabling production submissions. With no endpoint, the form validates but explicitly reports that no message was sent.
+The backend must enforce schema validation, length limits, allowed inquiry types, CSRF/origin protections appropriate to its authentication model, spam controls and server rate limiting. Allow the site’s origin through CORS if the endpoint is on another origin. Do not trust client timing, the honeypot or client-side validation. Keep mail credentials and routing logic server-side. Finalize recipient, retention, consent requirements and privacy information before enabling production submissions. The default FormSubmit endpoint remains active unless replaced. A replacement service must implement the documented API contract.
 
 ## Demo behavior
 
@@ -98,7 +112,7 @@ To verify configured API handling, start a separate dev server with `VITE_CONTAC
 
 ## Before commercial launch
 
-The privacy and terms pages are deliberately marked legal-review drafts. Replace review markers with verified legal/operator information and have qualified counsel finalize them. Supply the real contact service, verified support email and production origin. Verify the infrastructure’s logging and privacy behavior, test the specific product environments you support and perform manual screen-reader testing. Do not turn the illustrative mockups into claims about unverified product deployment.
+The privacy and terms pages are deliberately marked legal-review drafts. Replace review markers with verified legal/operator information and have qualified counsel finalize them. Activate and verify the selected contact service, confirm the official receiving mailbox, and set the production origin. Verify the infrastructure’s logging and privacy behavior, test the specific product environments you support and perform manual screen-reader testing. Do not turn the illustrative mockups into claims about unverified product deployment.
 
 See `ASSETS.md` for third-party image, font and package references.
 

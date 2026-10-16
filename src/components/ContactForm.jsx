@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight, LoaderCircle, CheckCircle2, AlertCircle } from 'lucide-react';
 import { site } from '../config/site';
+import { createContactPayload, isFormSubmitEndpoint, readContactResponse } from '../lib/contactService';
 const types = ['General Enquiry', 'Product Demo', 'Technical Support', 'Accessibility Feedback', 'Partnership', 'Other'];
 const empty = { fullName: '', email: '', organization: '', inquiryType: 'General Enquiry', subject: '', message: '', consent: false, website: '' };
 function validate(values) {
@@ -28,9 +29,13 @@ export default function ContactForm() {
     lastAttempt.current = Date.now(); setStatus({ type: 'loading', message: 'Sending your message…' });
     const controller = new AbortController(); const timeout = window.setTimeout(() => controller.abort(), 15000);
     try {
-      const response = await fetch(site.contactEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...values, fullName: values.fullName.trim(), email: values.email.trim(), subject: values.subject.trim(), message: values.message.trim(), organization: values.organization.trim(), source: 'a11yease-contact', formDurationMs: Date.now() - started.current }), signal: controller.signal });
-      if (!response.ok) throw new Error(response.status === 429 ? 'rate-limit' : 'failed');
-      setStatus({ type: 'success', message: 'Your message was accepted by the contact service. Thank you for reaching out.' }); setValues(empty); started.current = Date.now();
+      const response = await fetch(site.contactEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify(createContactPayload(values, Date.now() - started.current, site.contactEndpoint)), signal: controller.signal });
+      const result = await readContactResponse(response, site.contactEndpoint);
+      if (result === 'activation-required') {
+        setStatus({ type: 'info', message: `Message delivery is awaiting verification of our receiving mailbox. Your details are still here. Please email ${site.supportEmail} directly in the meantime.` });
+        return;
+      }
+      setStatus({ type: 'success', message: 'Your message was accepted for delivery. Thank you for reaching out.' }); setValues(empty); started.current = Date.now();
     } catch (error) { setStatus({ type: 'error', message: error.message === 'rate-limit' ? 'Too many requests. Please try again later.' : 'Your message could not be sent. Your details are still here; please try again later.' }); }
     finally { window.clearTimeout(timeout); }
   };
@@ -43,7 +48,7 @@ export default function ContactForm() {
     <div className="form-field"><label htmlFor="contact-message">Message<span className="required"> (required)</span></label><textarea id="contact-message" name="message" value={values.message} onChange={change} required maxLength={5000} rows={6} placeholder="Share your question, feedback or idea…" aria-invalid={!!errors.message} aria-describedby={`message-hint${errors.message ? ' error-message' : ''}`}/><p className="field-hint" id="message-hint">Please avoid including passwords, medical details or other sensitive information.</p>{errors.message && <p className="field-error" id="error-message"><AlertCircle size={14} aria-hidden="true"/>{errors.message}</p>}</div>
     <div className="honeypot" aria-hidden="true"><label htmlFor="contact-website">Leave this field empty</label><input id="contact-website" name="website" value={values.website} onChange={change} tabIndex={-1} autoComplete="off"/></div>
     <div className="consent-field"><label><input type="checkbox" name="consent" checked={values.consent} onChange={change} required aria-invalid={!!errors.consent} aria-describedby={errors.consent ? 'error-consent' : 'privacy-notice'}/><span>I understand that my contact details and message will be used to respond to this inquiry. <span className="required">(required)</span></span></label>{errors.consent && <p className="field-error" id="error-consent">{errors.consent}</p>}</div>
-    <p id="privacy-notice" className="privacy-notice">The <Link to="/privacy">privacy notice</Link> is a review draft. The operator must finalize message handling, retention and privacy information before enabling production submissions.</p>
+    <p id="privacy-notice" className="privacy-notice">{isFormSubmitEndpoint(site.contactEndpoint) ? <>Your contact details and message are shared with FormSubmit to forward your inquiry to {site.supportEmail}. </> : <>Your contact details and message are shared with our configured contact service to respond to your inquiry. </>}Read our <Link to="/privacy">privacy notice</Link>, which is currently a review draft.</p>
     {!site.contactEndpoint && <div className="integration-notice"><AlertCircle size={17} aria-hidden="true"/><p><strong>Preview mode · sending is not connected.</strong> You can explore and validate the form. Messages will not be delivered until the contact service is configured.</p></div>}
     <button className="button button-primary" type="submit" disabled={status.type === 'loading'}>{status.type === 'loading' ? <><LoaderCircle className="spin" size={18} aria-hidden="true"/> Sending…</> : <>Send Message <ArrowUpRight size={18} aria-hidden="true"/></>}</button>
     <div className={`form-status status-${status.type}`} role="status" aria-live="polite" aria-atomic="true">{status.message && <>{status.type === 'success' ? <CheckCircle2 size={19} aria-hidden="true"/> : <AlertCircle size={19} aria-hidden="true"/>}<p>{status.message}</p></>}</div>

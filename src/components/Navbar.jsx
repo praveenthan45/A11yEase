@@ -25,7 +25,7 @@ export default function Navbar() {
       <button ref={toggle} className="menu-toggle" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="primary-navigation" aria-label={open ? 'Close navigation' : 'Open navigation'}>{open ? <X /> : <Menu />}</button>
       <nav id="primary-navigation" aria-label="Main navigation" className={open ? 'nav-open' : ''}>
         <div className="nav-links">{navigation.map(([label, url]) => <NavLink key={url} to={url} end={url === '/'}>{label}</NavLink>)}</div>
-        <Button to="/#demo" className="nav-cta">Get Started</Button>
+        <Button to="/contact" className="nav-cta">Get Started</Button>
       </nav>
     </div>
   </header>;
