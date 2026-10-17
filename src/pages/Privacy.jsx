@@ -1,4 +1,5 @@
 import LegalPage from '../components/LegalPage';
+import { pageHeroImages } from '../data/pageHeroImages';
 import { site } from '../config/site';
 import { isBrandedContactEndpoint } from '../lib/contactService';
 const brandedEmail = isBrandedContactEndpoint(site.contactEndpoint);
@@ -12,4 +13,4 @@ const sections = [
   ['Individual Rights and Requests', ['[TO BE COMPLETED: applicable rights, identity verification process, request contact, response requirements and regulator information for the relevant jurisdictions.] The contact page may be used to discuss this draft once a verified communication channel is available.']],
   ['Updates and Effective Date', ['This document is a review draft with no effective date. Update it when the service, vendors or data practices change, and have the final document reviewed for the operator’s applicable obligations.']],
 ];
-export default function Privacy() { return <LegalPage type="Privacy Policy" sections={sections}/>; }
+export default function Privacy() { return <LegalPage type="Privacy Policy" sections={sections} image={pageHeroImages.privacy}/>; }

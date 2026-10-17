@@ -10,6 +10,7 @@ export default function Navbar() {
   const toggle = useRef(null);
   const header = useRef(null);
   const location = useLocation();
+  const visibleNavigation = navigation.filter(([, url]) => url !== '/' || location.pathname !== '/');
   useEffect(() => { setOpen(false); }, [location]);
   useEffect(() => { const onScroll = () => setScrolled(window.scrollY > 12); onScroll(); window.addEventListener('scroll', onScroll, { passive: true }); return () => window.removeEventListener('scroll', onScroll); }, []);
   useEffect(() => {
@@ -24,7 +25,7 @@ export default function Navbar() {
       <Link to="/" className="brand-link" aria-label="A11yEase home"><Brand /></Link>
       <button ref={toggle} className="menu-toggle" onClick={() => setOpen(!open)} aria-expanded={open} aria-controls="primary-navigation" aria-label={open ? 'Close navigation' : 'Open navigation'}>{open ? <X /> : <Menu />}</button>
       <nav id="primary-navigation" aria-label="Main navigation" className={open ? 'nav-open' : ''}>
-        <div className="nav-links">{navigation.map(([label, url]) => <NavLink key={url} to={url} end={url === '/'}>{label}</NavLink>)}</div>
+        <div className="nav-links">{visibleNavigation.map(([label, url]) => <NavLink key={url} to={url} end={url === '/'}>{label}</NavLink>)}</div>
         <Button to="/contact" className="nav-cta">Get Started</Button>
       </nav>
     </div>

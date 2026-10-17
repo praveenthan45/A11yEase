@@ -1,0 +1,67 @@
+.feature-settings-demo .demo-body { grid-template-columns:minmax(0,1fr) 340px; }
+.feature-settings-demo .demo-preview { height:700px; font-size:1rem; background:#f8f7f2; color:#243929; }
+.feature-settings-demo .demo-panel { min-height:700px; }
+.feature-settings-demo .demo-panel-heading { margin-bottom:16px; }
+.feature-settings-demo .feature-demo-count { color:#2457c5; background:#eff5ff; border-radius:6px; padding:9px 12px; font-size:.7rem; font-weight:700; margin-bottom:22px; }
+.feature-settings-demo .feature-demo-alignment { margin-bottom:16px; }
+.feature-settings-demo .feature-demo-alignment label { display:flex; align-items:center; gap:9px; font-size:.76rem; font-weight:700; margin-bottom:10px; color:#344760; }
+.feature-settings-demo .feature-demo-alignment select { width:100%; min-height:44px; border:1px solid #c5d2e5; border-radius:6px; padding:10px 12px; color:#243c60; background:#fff; font-size:.78rem; }
+.feature-settings-demo .demo-controls { display:flex; flex-direction:column; gap:9px; }
+.feature-settings-demo .demo-control { min-height:75px; padding:12px 10px; gap:9px; }
+.feature-settings-demo .feature-demo-control-copy { flex:1; min-width:0; }
+.feature-settings-demo .feature-demo-control-copy strong { display:block; font-size:.74rem; font-weight:700; line-height:1.5; }
+.feature-settings-demo .feature-demo-control-copy small { display:block; color:#526176; font-size:.67rem; font-weight:400; line-height:1.6; margin-top:4px; }
+.feature-settings-demo .demo-reset { margin-top:19px; min-height:44px; font-size:.73rem; }
+.feature-settings-demo .feature-demo-scroll { height:100%; overflow:auto; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color:#b7c4b2 transparent; }
+.feature-settings-demo .feature-demo-scroll:focus-visible { outline-offset:-5px; }
+.feature-settings-demo .feature-demo-nav { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-inline:34px; padding-block:20px; border-bottom:1px solid #dce2d6; }
+.feature-settings-demo .feature-demo-brand { font-size:1.4rem; font-weight:800; letter-spacing:-.07em; }
+.feature-settings-demo .feature-demo-brand>span { color:#58774c; }
+.feature-settings-demo .feature-demo-nav>div { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.feature-settings-demo .feature-demo-target { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:40px; padding:9px 12px; border:1px solid #b8c8ad; border-radius:6px; font-size:.75rem; line-height:1.5; color:#2d4930; background:#fffef8; font-weight:600; }
+.feature-settings-demo .feature-demo-target:hover { background:#e6eddf; }
+.feature-settings-demo .feature-demo-target[aria-pressed=true] { background:#dcebd2; border-color:#6e8b60; }
+.feature-settings-demo .feature-demo-target:focus-visible { outline:3px solid #2457c5; outline-offset:3px; }
+.feature-settings-demo .feature-demo-article { max-width:650px; margin:32px auto 0; padding:0 34px 38px; overflow-wrap:anywhere; }
+.feature-settings-demo .feature-demo-article .feature-demo-kicker { font-size:.58rem; font-weight:800; letter-spacing:.13em; color:#526949; margin:0 0 19px; }
+.feature-settings-demo .feature-demo-article h3 { font-size:2.6rem; line-height:1.15; letter-spacing:-.05em; color:inherit; }
+.feature-settings-demo .feature-demo-article h4 { font-size:1.15rem; line-height:1.5; margin-top:28px; color:inherit; }
+.feature-settings-demo .feature-demo-article p { color:#3f5142; font-size:.85rem; line-height:1.9; margin-top:16px; }
+.feature-settings-demo .feature-demo-article .feature-demo-intro { font-size:.95rem; }
+.feature-settings-demo .feature-demo-actions { display:flex; gap:9px; flex-wrap:wrap; margin-top:22px; }
+.feature-settings-demo .feature-demo-photo { width:100%; height:180px; object-fit:cover; margin-top:25px; border-radius:8px; }
+.feature-settings-demo .feature-demo-tip { background:#e9f0e2; border:1px solid #b6c6aa; border-radius:8px; padding:16px; margin-top:18px; font-size:.83rem; }
+.feature-settings-demo .feature-demo-tip>p { font-size:.8rem; margin-top:7px; }
+.feature-settings-demo .feature-demo-related { padding:20px; margin-top:26px; border:1px solid #d0d9c6; border-radius:8px; background:#eef1e5; }
+.feature-settings-demo .feature-demo-related>span { display:block; font-size:.57rem; letter-spacing:.1em; font-weight:800; color:#526949; margin-bottom:10px; }
+.feature-settings-demo .feature-demo-related>strong { font-size:.97rem; line-height:1.6; display:block; }
+.feature-settings-demo .feature-demo-related>p { font-size:.8rem; margin-top:8px; }
+.feature-settings-demo .has-paragraph-highlighting .feature-demo-article p { padding:12px 14px; border:2px solid #698153; border-radius:6px; background:#eef2d9; color:#263c2a; }
+.feature-settings-demo .has-paragraph-highlighting .feature-demo-article .feature-demo-kicker { border:0; padding:0; background:transparent; }
+.feature-settings-demo .is-distraction-free .feature-demo-secondary { display:none; }
+.feature-settings-demo .has-reading-font .feature-demo-article { font-family:OpenDyslexic,sans-serif; }
+.feature-settings-demo .has-reading-font .feature-demo-article h3 { font-size:2rem; letter-spacing:0; line-height:1.5; }
+
+@media (max-width:1199px) {
+  .feature-settings-demo .demo-body { grid-template-columns:minmax(0,1fr) 310px; }
+  .feature-settings-demo .feature-demo-nav { margin-inline:25px; flex-wrap:wrap; }
+  .feature-settings-demo .feature-demo-article { padding-inline:25px; }
+  .feature-settings-demo .feature-demo-article h3 { font-size:2.25rem; }
+}
+@media (max-width:767px) {
+  .feature-settings-demo .demo-preview { height:570px; }
+  .feature-settings-demo .demo-panel { min-height:0; }
+  .feature-settings-demo .demo-controls { display:grid; grid-template-columns:1fr 1fr; }
+  .feature-settings-demo .demo-control { min-height:100px; }
+  .feature-settings-demo .feature-demo-control-copy strong { font-size:.77rem; }
+  .feature-settings-demo .feature-demo-control-copy small { font-size:.71rem; }
+}
+@media (max-width:479px) {
+  .feature-settings-demo .demo-controls { display:flex; }
+  .feature-settings-demo .demo-control { min-height:75px; }
+  .feature-settings-demo .feature-demo-nav { margin-inline:23px; }
+  .feature-settings-demo .feature-demo-article { padding-inline:23px; }
+  .feature-settings-demo .feature-demo-article h3 { font-size:2.15rem; }
+  .feature-settings-demo .feature-demo-article p { font-size:.85rem; }
+  .feature-settings-demo .feature-demo-nav>div { gap:6px; }
+}
